@@ -38,6 +38,8 @@ After that is done, ensure you have the appropriate libraries installed.
 When running, an IP address will be printed to the Serial Monitor. Copy and paste this IP address into a web browser and interact with your own chatbot!
 
 ### Project for Students
+For anyone wondering about the name of the files, my group's name was "JAAK," a play on the first initial of their names.
+
 If you would like to provide this as a challenge to your students, I have annotated the code in such a way where they have to write only two lines of code:
 1. Simply call a void function
 2. Create a string that stores the response of another function
