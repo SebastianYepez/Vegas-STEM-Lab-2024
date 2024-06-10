@@ -1,0 +1,165 @@
+<!-- Working with HTML on VSCode is a lot easier. If possible, have your students download VSCode 
+      and the Live Server extension to easily see the changes they make on their websocket. -->
+
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>JAAK-GPT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* CSS */
+    html { 
+      font-family: Arial, Helvetica, sans-serif; 
+      text-align: center;
+      background-color: #433870; 
+    }
+    h1 { 
+      font-size: 1.8rem; 
+      color: rgb(7, 6, 6); 
+    }
+    .topnav {
+      overflow: hidden;
+      background-color: #433870;
+      position: absolute;
+      width: 100%; /* Ensure full width */
+    }
+    body {
+      margin: 0;
+      background-image: url('images/dreamy\ night\ train\ gif.gif');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: transparent;
+      height: 100vh;
+      width: 100vw;
+      animation: moveBackground 10s linear infinite;
+    }
+    .content {
+      max-width: 600px;
+      margin: 0 auto; /* Center the content horizontally */
+      padding-top: 50px; /* Add some padding at the bottom */
+    }
+    .content h2 {
+    color: white; /* Set the initial color to transparent */
+    margin-top: 0; /* Remove top margin */
+    padding-top: 0px; /* Add some padding at the top */
+  }
+
+    .button { 
+      padding: 15px 50px; 
+      font-size: 24px; 
+      text-align: center; 
+      outline: none; 
+      color: #fff; 
+      background-color: #484fab; 
+      border: none; 
+      border-radius: 5px; 
+      user-select: none; 
+    }
+    .button:active { 
+      background-color: #4d54b6; 
+      box-shadow: 2 2px #CDCDCD; 
+      transform: translateY(2px); 
+    }
+    #outputText { 
+      font-size: 1rem; 
+      margin-top: 10px; 
+      padding: 10px; 
+      border: 1px solid #ccc; 
+      border-radius: 5px; 
+      width: 80%; 
+      margin-left: 2%; 
+    }
+    #inputText { 
+      font-size: 1rem; 
+      margin-top: 10px; /* Adjusted margin-top for better spacing */
+      padding: 10px; /* Added padding for better appearance */
+      border: 1px solid #ccc; 
+      border-radius: 5px; 
+      width: 80%; 
+      margin-left: 2%; 
+      resize: none; 
+      overflow-y: hidden; 
+    }
+    #openAiLogo {
+      width: 192px; 
+      height: 192px;
+      margin-top: 12px; /* Adjust the margin-top to position the logo below the header */
+      margin-bottom: -15px;
+      animation: rotateLogo 5s linear infinite; /* Define the animation */
+    }
+
+    @keyframes rotateLogo {
+      0% { transform: rotate(0deg); } /* Start rotation */
+      100% { transform: rotate(360deg); } /* End rotation */
+    }
+
+    @keyframes moveBackground {
+      from { background-position: 0 0; }
+      to { background-position: 100% 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topnav">
+    <h1>JAAK-GPT</h1>
+  </div>
+  <div class="content">
+    <img id="openAiLogo" src="images/open ai logo.png" alt="open ai logo">
+    <h2>All the answers you need are here..</h2>
+    <textarea id="inputText" placeholder="Type your message here..."></textarea>
+    <p><button id="sendButton" class="button">Send</button></p>
+    <textarea id="outputText" readonly></textarea>
+  </div>
+
+  <script>
+    // JavaScript
+    var gateway = `ws://${window.location.hostname}/ws`;
+    var websocket;
+    window.addEventListener('load', onLoad);
+
+    function initWebSocket() {
+      console.log('Trying to open a WebSocket connection...');
+      websocket = new WebSocket(gateway);
+      websocket.onopen    = onOpen;
+      websocket.onclose   = onClose;
+      websocket.onmessage = onMessage;
+    }
+
+    function onOpen(event) {
+      console.log('Connection opened');
+    }
+
+    function onClose(event) {
+      console.log('Connection closed');
+      setTimeout(initWebSocket, 2000);
+    }
+
+    function onMessage(event) {
+      console.log('Received message from server: ' + event.data);
+      // Update the output text box with the received message
+      var outputText = document.getElementById('outputText');
+      outputText.value = ""; // Clear the output text box when result arrives
+      outputText.value += event.data + '\n'; // Display the message received from ESP32
+      outputText.rows = outputText.value.split('\n').length; // Adjust the number of rows based on the number of lines
+    }
+
+    function onLoad(event) {
+      initWebSocket();
+      initButton();
+    }
+
+    function initButton() {
+      document.getElementById('sendButton').addEventListener('click', sendMessage);
+    }
+
+    function sendMessage(){
+      var input = document.getElementById('inputText').value;
+      var outputText = document.getElementById('outputText');
+      outputText.value = "Thinking..."; // Says "Thinking..." whenever the button is pressed
+      websocket.send(input);
+    }
+  </script>
+</body>
+</html>
+
